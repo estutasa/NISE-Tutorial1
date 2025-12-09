@@ -2,7 +2,7 @@ close all
 clear all
 
 
-regexFile = 'data/acc*.mat';
+regexFile = '*/data/acc*.mat';
 files = dir(regexFile);
 
 acc = [];

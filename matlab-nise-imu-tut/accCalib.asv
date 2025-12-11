@@ -25,7 +25,7 @@ w = zeros(3,1);
 %   Implement the ellipsoid fitting algorthm which finally delivers w, R,
 %   and G.
 
-M_meas = [ax'.^2,ay'.^2,az'.^2,ax',ay',az']; % we eliminate here the terms related to the rotations
+M_meas = [ax.^2,ay.^2,az.^2,ax,ay,az]'; % we eliminate here the terms related to the rotations
 d= ones(length(ax),1); 
 
 % Calculate the coeficients that minimize the error:
@@ -41,12 +41,8 @@ w = -0.5 * (A_\b_);
 %into account, it is needed to calculate the scale factor (correct the size
 %of the matrix)
 scale_factor = 1+w' *A_*w;
-A_fit = A_ /scale_factor;
+A_corrected = A_ /scale_factor;
 
-G = sqrt(A_fit);
-
-%Assume aligned axis, so rotation matrix is identuty
-R = eye(3);
 
 
 %   M is the model matrix and describes the transformation of the

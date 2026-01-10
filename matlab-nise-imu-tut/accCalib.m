@@ -56,6 +56,8 @@ w = zeros(3,1);
 % The raw measurements are x_raw = [ax; ay; az]
 
 % X is N x 6, where N is the number of samples
+% Decided to keep the linear terms simple [ax; ay; az]. 
+% This matches the w = -0.5 * inv(A) * B approach we're using to find the center.
 X = [ax.^2; ay.^2; az.^2; ax; ay; az]'; 
 
 % y is N x 1, a vector of ones (based on the equation form)
@@ -98,7 +100,6 @@ M_sq = A_fit * g_sq_inv;
 
 % M_sq = G * R * R^T * G = G^2 (since R*R^T = I and R is identity or 90-deg rot)
 G_sq = M_sq; 
-G = sqrt(G_sq); % G is a diagonal matrix of gains.
 
 % R is fixed to Identity (or the 90-degree solution if we solve that separately).
 % Since the problem constraint is used to simplify the fit, R remains I here.
@@ -109,8 +110,7 @@ R = eye(3);
 % We typically want G to be the diagonal matrix of inverse scale factors.
 
 % Final output matrices M, w, R, G
-G = sqrt(diag(G_sq)); % G must be a 3x1 vector of gains for output, not a diagonal matrix
-G = diag(G);
+G = diag(sqrt(diag(M_sq)));
 
 %??????????????????????????????????????????????????????????????????????????
 

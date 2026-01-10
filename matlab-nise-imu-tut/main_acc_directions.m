@@ -1,10 +1,8 @@
 close all
 clear all
 
-
-regexFile = 'data/acc*.mat';
+regexFile = '*/data/acc*.mat';
 files = dir(regexFile);
-
 acc = [];
 
 for k=1:length(files)
@@ -12,79 +10,60 @@ for k=1:length(files)
     name = file.name;
     path = file.folder;
     fileNamePath = [path '/' name];
-    
     disp(['Load experiment: ' name]);
-    
     temp = load(fileNamePath);
     expt(k) = temp.expt;
-
     acc(k).name = expt(k).name;
     acc(k).mean = mean(expt(k).imu.acc,2);
-
 end
 
 name2el = @(s,name) s(strcmp({s(:).name},name));
-
 names = {'accXp','accXn','accYp','accYn','accZp','accZn'};
 descr = {'+x','-x','+y','-y','+z','-z'};
 
 % Transformation between acc coordinate system and coordinate system 0
-%   acc wrt. 0
+% acc wrt. 0
 T_acc_0 = eye(4);
 
-
-
 %??????????????????????????????????????????????????????????????????????????
-%   Define the transformation between the coordinate frame of the
-%   accelerometer and the base frame 0.
+% Define the transformation between the coordinate frame of the
+% accelerometer and the base frame 0.
 %
-%   Use the print outs of this script to get the represenatation of the x,
-%   y, and z axes of the accelerometer wrt the coordinates of the base
-%   frame.
+% Use the print outs of this script to get the represenatation of the x,
+% y, and z axes of the accelerometer wrt the coordinates of the base
+% frame.
 %
-%   NOTE: You only need to dermine the rotation, the translation is assumed
-%   to be zero. All rotations are devidable by 90 degrees.
+% NOTE: You only need to dermine the rotation, the translation is assumed
+% to be zero. All rotations are devidable by 90 degrees.
 %
-
-T_acc_0(1:3,1) = [1 0 0];
-T_acc_0(1:3,2) = [0 1 0];
-T_acc_0(1:3,3) = [0 0 1];
-
-
+T_acc_0(1:3,1) = [0 -1 0];
+T_acc_0(1:3,2) = [-1 0 0];
+T_acc_0(1:3,3) = [0 0 -1];
 %??????????????????????????????????????????????????????????????????????????
-
 
 disp('Transformation between acc coordinate system and coordinate system 0:');
 disp('T_acc_0 =')
 disp(T_acc_0);
 
-
 for k=1:length(names)
     el = name2el(acc,names{k});
-    
     acc_raw = el.mean;
-    
+
     %??????????????????????????????????????????????????????????????????????
-    %   Use T_acc_0 to transform the measurements acc_raw wrt the 
-    %   coordinate frame of the accelerometer to the base frame 0.
+    % Use T_acc_0 to transform the measurements acc_raw wrt the
+    % coordinate frame of the accelerometer to the base frame 0.
     %
-    %
-    
-    % Expand acc_raw to homogeneous coordinates such that 
-    %   isequal(size(acc_raw),[4 1]) == true
-    
+    % Expand acc_raw to homogeneous coordinates such that
+    % isequal(size(acc_raw),[4 1]) == true
     % Transform acc_raw to a_0
-    a_0 = acc_raw;
-    
+    a_0 = [acc_raw; 0];
+    a_0_hom = T_acc_0 * a_0;
+    a_0 = a_0_hom(1:3);
     %??????????????????????????????????????????????????????????????????????
-    
+
     str = ['Gravitational acceleration in ' descr{k} ':'];
     disp(str)
     disp(a_0)
 end
 
 save('T_acc_0.mat','T_acc_0');
-
-
-
-

@@ -2,7 +2,7 @@ close all
 clear all
 % Load reconstructed reference patch
 % regexFile = 'data/p21_shape1.mat';
-regexFile = 'data/p21_shape2.mat';
+regexFile = 'data/p21_*.mat';
 files = dir(regexFile);
 file = files(1);
 name = file.name;
@@ -149,3 +149,4 @@ end
 title('Skin Patch (3D Recon Brute Force)')
 
 
+to try if what we did is correct do i run this main_patch.m file or?
